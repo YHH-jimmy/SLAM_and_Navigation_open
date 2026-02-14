@@ -1,0 +1,100 @@
+/**:
+  ros__parameters:
+
+    # =====================================================
+    # M2DGR Dataset Configuration for LIO-SAM
+    # Dataset: Multi-modal, Multi-scenario SLAM Dataset
+    # LiDAR: RoboSense RS-LiDAR-32
+    # IMU: Built-in 6-axis or external 9-axis
+    # =====================================================
+
+    # Topics - M2DGR Specific
+    pointCloudTopic: "/rslidar_points"           # RoboSense LiDAR point cloud
+    imuTopic: "/imu"                             # IMU data topic
+    odomTopic: "odometry/imu"                    # IMU pre-preintegration odometry
+    gpsTopic: "odometry/gpsz"                    # GPS odometry (if available)
+
+    # Frames
+    lidarFrame: "rslidar"                        # RoboSense LiDAR frame
+    baselinkFrame: "base_link"
+    odometryFrame: "odom"
+    mapFrame: "map"
+
+    # GPS Settings
+    useImuHeadingInitialization: false           # Set to true if using external GPS
+    useGpsElevation: false                       # GPS elevation quality in M2DGR varies
+    gpsCovThreshold: 2.0                         # m^2, threshold for using GPS data
+    poseCovThreshold: 25.0                       # m^2, threshold for using GPS data
+
+    # Export settings
+    savePCD: true                              # Set to true to save point cloud maps
+    savePCDDirectory: "/home/jimmyrtioms/Downloads/M2DGR_MAPS/"  # Output directory for maps
+
+    # Sensor Settings - RoboSense RS-LiDAR-32
+    sensor: velodyne                             # Use 'velodyne' for RoboSense (similar format)
+    N_SCAN: 32                                   # RoboSense RS-LiDAR-32 has 32 channels
+    Horizon_SCAN: 1800                           # Horizontal resolution, typical for RS-32
+    downsampleRate: 1                            # 1 = no downsampling, increase if data is too dense
+    lidarMinRange: 1.0                           # Minimum valid range (meters)
+    lidarMaxRange: 200.0                         # Maximum valid range for RS-32 (meters)
+
+    # IMU Settings - M2DGR IMU (需要根据实际IMU标定)
+    # 注意: 这些参数需要根据您使用的具体IMU型号进行调整
+    # 如果M2DGR使用的是6轴IMU，LIO-SAM可能无法正常工作
+    imuAccNoise: 3.9939570888238808e-03          # 加速度计噪声 (需要标定)
+    imuGyrNoise: 1.5636343949698187e-03          # 陀螺仪噪声 (需要标定)
+    imuAccBiasN: 6.4356659353532566e-05          # 加速度计偏差噪声
+    imuGyrBiasN: 3.5640318696367613e-05          # 陀螺仪偏差噪声
+
+    imuGravity: 9.80511                          # 重力加速度
+    imuRPYWeight: 0.01                           # RPY初始化权重
+
+    # Extrinsic: IMU to LiDAR transformation
+    # 需要根据M2DGR数据集的实际外参进行调整
+    # 默认值假设IMU与LiDAR重合
+    extrinsicTrans:  [ 0.0,  0.0,  0.0 ]        # [x, y, z] translation from IMU to LiDAR
+    extrinsicRot:    [ 1.0,  0.0,  0.0,
+                       0.0,  1.0,  0.0,
+                       0.0,  0.0,  1.0 ]         # Rotation matrix from IMU to LiDAR (identity)
+    extrinsicRPY:    [ 1.0,  0.0,  0.0,
+                       0.0,  1.0,  0.0,
+                       0.0,  0.0,  1.0 ]         # Alternative rotation representation
+
+    # LOAM feature threshold
+    edgeThreshold: 1.0                           # Edge feature threshold
+    surfThreshold: 0.1                           # Surface feature threshold
+    edgeFeatureMinValidNum: 10                   # Minimum edge features
+    surfFeatureMinValidNum: 100                  # Minimum surface features
+
+    # Voxel filter params - Outdoor/Indoor Mixed Scenarios
+    odometrySurfLeafSize: 0.3                    # 0.3 for mixed scenarios (0.4 outdoor, 0.2 indoor)
+    mappingCornerLeafSize: 0.15                  # 0.15 for mixed scenarios
+    mappingSurfLeafSize: 0.3                     # 0.3 for mixed scenarios
+
+    # Robot motion constraint (M2DGR includes handheld and wheeled robot data)
+    z_tollerance: 1000.0                         # Large value for 6DOF motion (handheld)
+    rotation_tollerance: 1000.0                  # Large value for 6DOF motion
+
+    # CPU Params
+    numberOfCores: 4                             # Number of CPU cores for optimization
+    mappingProcessInterval: 0.15                 # Mapping frequency (seconds)
+
+    # Surrounding map
+    surroundingkeyframeAddingDistThreshold: 1.0  # Keyframe distance threshold (meters)
+    surroundingkeyframeAddingAngleThreshold: 0.2 # Keyframe angle threshold (radians)
+    surroundingKeyframeDensity: 2.0              # Keyframe density (meters)
+    surroundingKeyframeSearchRadius: 50.0        # Search radius for scan-to-map (meters)
+
+    # Loop closure
+    loopClosureEnableFlag: true                  # Enable loop closure detection
+    loopClosureFrequency: 1.0                    # Loop closure check frequency (Hz)
+    surroundingKeyframeSize: 50                  # Submap size for loop closure
+    historyKeyframeSearchRadius: 15.0            # Loop closure search radius (meters)
+    historyKeyframeSearchTimeDiff: 30.0          # Time difference for loop closure (seconds)
+    historyKeyframeSearchNum: 25                 # Number of history keyframes for loop closure
+    historyKeyframeFitnessScore: 0.3             # ICP fitness score threshold (lower is better)
+
+    # Visualization
+    globalMapVisualizationSearchRadius: 500.0    # Visualization radius (meters)
+    globalMapVisualizationPoseDensity: 10.0      # Keyframe density for visualization
+    globalMapVisualizationLeafSize: 1.0          # Point cloud density for visualization
